@@ -1,6 +1,4 @@
 const express = require("express");
-const knex = require('knex');
-// const db = knex(require('./knexfile').development);
 const db = require('./data/db.js');
 
 const server = express();
@@ -14,33 +12,24 @@ function getIngredients() {
   return db("ingredients");
 }
 
-// function getEmptyCourses() {
+function getShoppingList(id) {
+  return db.select('ingredient', 'quantity').from('belonging')
+  .innerJoin('recipes', 'recipes.id', 'belonging.recipe_id')
+  .innerJoin('ingredients', 'ingredients.id', 'belonging.ingredient_id')
+  .where({ recipe_id: id  });
+}
 
-// }
+function getInstructionForRecipe(id) {
+  return db.select('instructions').from('recipes').where({ id  });
+}
 
-// function getLazyStudents() {
-// //   select
-// //   users.id,
-// //   users.fname,
-// //   users.lname
-// // from
-// // users
-// // left join enrollments on users.id = enrollments.user_id
-// // left join courses on courses.id = enrollments.course_id
-// // where courses.id is NULL;
-// return db.select('user_id', 'fname', 'lname', 'name')
-//   .from('users')
-//   .leftJoin('enrollments', 'users.id', 'enrollments.user_id')
-//   .leftJoin('courses', 'courses.id', 'enrollments.course_id')
-//   .where({ 'courses.id': null });
-// }
+function deleteRecipe(id) {
+  return db('recipes').where({ id }).delete();
+}
 
-// function getLazyStudentsWithCourses() {
-//   return db.select('user_id', 'fname', 'lname', 'name')
-//   .from('users')
-//   .innerJoin('enrollments', 'users.id', 'enrollments.user_id')
-//   .innerJoin('courses', 'courses.id', 'enrollments.course_id');
-// }
+function deleteIngredient(id) {
+  return db('ingredients').where({ id }).delete();
+}
 
 server.get('/recipes', async (req, res, next) => {
   try {
@@ -60,18 +49,41 @@ server.get('/ingredients', async (req, res, next) => {
   }
 });
 
-// server.post('/cookingbook', async (req, res, next) => {
-//   try {
-//     const { fname, lname, email } = req.body;
-//     const result = await addUserWithEmail({
-//       fname, lname, email
-//     });
-//     res.json(result);
-//   } catch (error) {
-//     console.log(error);
-//     next(error);
-//   }
-// });
+server.get('/recipe/:id', async (req, res, next) => {
+  try {
+    const result = await getShoppingList(req.params.id);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+server.get('/instruction/:id', async (req, res, next) => {
+  try {
+    const result = await getInstructionForRecipe(req.params.id);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+server.delete('/recipe/:id', async (req, res, next) => {
+  try {
+    const result = await deleteRecipe(req.params.id);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+server.delete('/ingredient/:id', async (req, res, next) => {
+  try {
+    const result = await deleteIngredient(req.params.id);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
 
 
 
