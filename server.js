@@ -20,7 +20,7 @@ function getShoppingList(id) {
 }
 
 function getInstructionForRecipe(id) {
-  return db.select('instructions').from('recipes').where({ id  });
+  return db('instructions').where({ recipe_id: id  });
 }
 
 function deleteRecipe(id) {
