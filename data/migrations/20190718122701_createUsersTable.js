@@ -2,15 +2,11 @@
 exports.up = function(knex) {
   return knex.schema.createTable('recipes', table => {
     table.increments();
-    table.text('recipe', 300).notNullabe().unique();
+    table.text('recipe', 300).notNullable().unique();
   })
   .createTable('ingredients', table => {
     table.increments();
-    table.text('ingredient', 300).notNullabe();
-  })
-  .createTable('', table => {
-    table.increments();
-    table.text('recipe', 300).notNullabe().unique();
+    table.text('ingredient', 300).notNullable();
   })
   .createTable("belonging", table => {
     table.increments();
@@ -33,5 +29,5 @@ exports.down = function(knex) {
   return knex.schema
   .dropTableIfExists('recipes')
   .dropTableIfExists('ingredients')
-  .dropTableIfExists('belonging')
+  .dropTableIfExists('belonging');
 };
